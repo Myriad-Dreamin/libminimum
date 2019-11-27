@@ -1,6 +1,11 @@
 
 COMPILECXX ?= $(CXX) $(CXXFLAGS) $(LDFLAGS)
-PRINTGEN := print.cc -I../include -o build/example -fmax-errors=1
+OUT_TO_BUILD ?= -I../include -o build/example -fmax-errors=1
+PRINTGEN := print.cc $(OUT_TO_BUILD)
+GRAPHGEN := graph.cc $(OUT_TO_BUILD)
+
+print-hello-world: print-gen-hello-world
+	build/example
 
 build-dir:
 	mkdir -p build
@@ -26,10 +31,10 @@ print-gen-serial-container: build-dir
 print-gen-queue-like-container: build-dir
 	$(COMPILECXX) -DQueueLikeContainer $(PRINTGEN)
 
-print: print-gen
-	build/example
+graph-gen: build-dir
+	$(COMPILECXX) $(GRAPHGEN)
 
-print-hello-world: print-gen-hello-world
+print: print-gen
 	build/example
 
 print-combining-container: print-gen-combining-container
@@ -46,6 +51,10 @@ print-serial-container: print-gen-serial-container
 
 print-queue-like-container: print-gen-queue-like-container
 	build/example
+
+graph: graph-gen
+	build/example
+
 
 clean:
 	rm build/* -r

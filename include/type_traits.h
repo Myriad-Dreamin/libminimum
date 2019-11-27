@@ -5,7 +5,7 @@
 #include <iomanip>
 
 namespace minimum {
-		namespace is_iterator_np
+		namespace __is_iterator_np
 	{
 		namespace detail
 		{
@@ -20,12 +20,12 @@ namespace minimum {
 			std::false_type is_iterator_impl(...);
 		}
 
-	} // namespace is_iterator_np
+	} // namespace __is_iterator_np
 
 	template <typename T>
-	using is_iterator = decltype(is_iterator_np::detail::is_iterator_impl<T>(0));
+	using is_iterator = decltype(__is_iterator_np::detail::is_iterator_impl<T>(0));
 
-	namespace is_iterable_np
+	namespace __is_iterable_np
 	{
 		namespace detail
 		{
@@ -45,12 +45,12 @@ namespace minimum {
 			template <typename T>
 			std::false_type is_iterable_impl(...);
 		}
-	} // namespace is_iterable_np
+	} // namespace __is_iterable_np
 
 	template <typename T>
-	using is_iterable = decltype(is_iterable_np::detail::is_iterable_impl<T>(0));
+	using is_iterable = decltype(__is_iterable_np::detail::is_iterable_impl<T>(0));
 
-	namespace is_queue_like_np
+	namespace __is_queue_like_np
 	{
 		namespace detail
 		{
@@ -65,10 +65,10 @@ namespace minimum {
 			std::false_type is_queue_like_impl(...);
 		}
 
-	} // namespace is_queue_like_np
+	} // namespace __is_queue_like_np
 
 	template <typename T>
-	using is_queue_like = decltype(is_queue_like_np::detail::is_queue_like_impl<T>(0));
+	using is_queue_like = decltype(__is_queue_like_np::detail::is_queue_like_impl<T>(0));
 
 	namespace has_operator_pp_np
 	{
@@ -102,7 +102,5 @@ namespace minimum {
 
 	template <typename T>
 	using has_operator_spp = decltype(has_operator_pp_np::detail0::has_operator_pp_impl<T>(0));
-
 }
-
 

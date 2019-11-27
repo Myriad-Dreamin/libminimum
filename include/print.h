@@ -5,6 +5,7 @@
 #include <string>
 #include <type_traits>
 #include <cassert>
+#include <queue>
 
 namespace minimum
 {
@@ -93,15 +94,16 @@ struct basic_printer
 		os << '(';
 		print(x.first) << ',';
 		print(x.second) << ')';
+        return os;
 	}
 
 	template <typename container_t, typename... Types>
 	typename std::enable_if<is_iterable<container_t>::value, ostream &>::type
-	print(const container_t &xs)
+	print(container_t &xs)
 	{
 		os << '{';
 		bool vd = false;
-		for (auto &x : xs)
+		for (auto &x: xs)
 		{
 			if (vd)
 				os << ',';
