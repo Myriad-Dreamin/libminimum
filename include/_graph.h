@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "cxx17.h"
 
 
 namespace minimum {

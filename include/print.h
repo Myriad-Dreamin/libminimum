@@ -35,8 +35,8 @@ struct basic_printer
 		return os << x;
 	}
 
-	template <typename... Types>
-	ostream &print(const std::basic_string<stream_t> &x)
+	template <typename char_t, typename... Types>
+	ostream &print(const std::basic_string<char_t> &x)
 	{
 		if (quoto)
 		{
@@ -51,8 +51,8 @@ struct basic_printer
 	}
 
 #if __cplusplus >= 201703L
-	template <typename... Types>
-	ostream &print(const std::basic_string_view<stream_t> &x)
+	template <typename char_t, typename... Types>
+	ostream &print(const std::basic_string_view<char_t> &x)
 	{
 		if (quoto)
 		{
@@ -68,7 +68,7 @@ struct basic_printer
 #endif
 
 	template <typename... Types>
-	ostream &print(const stream_t *x)
+	ostream &print(const char *x)
 	{
 		if (quoto)
 		{
@@ -98,8 +98,10 @@ struct basic_printer
 	}
 
 	template <typename container_t, typename... Types>
-	typename std::enable_if<is_iterable<container_t>::value, ostream &>::type
-	print(container_t &xs)
+	typename std::enable_if<
+        !std::is_convertible<container_t, std::basic_string<typename container_t::value_type>>::value
+        && is_iterable<container_t>::value, ostream &>::type
+	print(const container_t &xs)
 	{
 		os << '{';
 		bool vd = false;
