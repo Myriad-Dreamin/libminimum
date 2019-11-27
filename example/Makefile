@@ -32,7 +32,13 @@ print-gen-queue-like-container: build-dir
 	$(COMPILECXX) -DQueueLikeContainer $(PRINTGEN)
 
 graph-gen: build-dir
-	$(COMPILECXX) $(GRAPHGEN)
+	$(COMPILECXX) -DFix  -DNFix $(GRAPHGEN)
+	
+graph-gen-fix: build-dir
+	$(COMPILECXX) -DFix $(GRAPHGEN)
+
+graph-gen-nfix: build-dir
+	$(COMPILECXX) -DNFix $(GRAPHGEN)
 
 print: print-gen
 	build/example
@@ -53,6 +59,12 @@ print-queue-like-container: print-gen-queue-like-container
 	build/example
 
 graph: graph-gen
+	build/example
+
+graph-fix: graph-gen-fix
+	build/example
+
+graph-nfix: graph-gen-nfix
 	build/example
 
 
