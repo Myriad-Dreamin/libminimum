@@ -83,13 +83,13 @@ int main3() {
     auto c = Gen(true);
     cout << "-------------------" << endl;
     if (c) {
-        auto cp = c.just();
+        auto cp = *c;
         cout << cp << endl;
         cout << "-------------------" << endl;
-        Int &&ref = c.just();
+        Int &&ref = *c;
         cout << ref << endl;
         cout << "-------------------" << endl;
-        cout << c.just() << endl;
+        cout << *c << endl;
     }
     cout << "-------------------" << endl;
     auto d = Gen(false);

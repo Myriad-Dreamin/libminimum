@@ -12,10 +12,6 @@ template<typename just_t, typename nothing_t=_nothing>
 struct maybe
 {
     using maybe_t = maybe<just_t, nothing_t>;
-// #if __cplusplus >= 201703L
-    std::any maybe_v;
-    bool just_b;
-
     maybe() { just_b = false; }
 
     template<typename just_x>
@@ -25,10 +21,10 @@ struct maybe
         >::type assert = void()) : maybe_v(std::forward<just_x>(just_v)) {
         just_b = true; }
     
-    maybe(const just_t &r) : maybe_v(r), just_b(true) { std::cout << "...."; }
+    maybe(const just_t &r) : maybe_v(r), just_b(true) { }
     maybe(just_t &&r) : maybe_v(std::move(r)), just_b(true) { }
     
-    maybe(const maybe_t &r) : maybe_v(r.maybe_v), just_b(r.just_b) { std::cout << "...."; }
+    maybe(const maybe_t &r) : maybe_v(r.maybe_v), just_b(r.just_b) { }
     maybe(maybe_t &&r) : just_b(r.just_b) { maybe_v.swap(r.maybe_v); }
     
     template<typename just_x>
@@ -52,8 +48,6 @@ struct maybe
         return *this;
     }
 
-
-
     template<typename nothing_x>
     maybe_t &make_nothing(nothing_x &&nothing_v) {
         just_b = false;
@@ -68,16 +62,29 @@ struct maybe
         return maybe_v.has_value();
     }
 
+    bool has_just_value() const {
+        return bool();
+    }
+
+    bool has_nothing_value() const {
+        return !just_b && maybe_v.has_value();
+    }
+
     just_t &&just() { return std::move(std::any_cast<just_t&>(maybe_v)); }
+    just_t &&operator*() { return just(); }
+    
     nothing_t &&nothing() { return std::move(std::any_cast<nothing_t&>(maybe_v)); }
     template<typename nothing_x>
     auto nothing_or(nothing_x &&nothing_v) {
-        return maybe_v.has_value() ? std::move(std::any_cast<nothing_t&>(maybe_v)) : std::forward<nothing_x>(nothing_v); }
+        return has_nothing_value() ? std::move(std::any_cast<nothing_t&>(maybe_v)) : std::forward<nothing_x>(nothing_v); }
 // #else
 //     using just_t = just_t;
 //     using nothing_t = nothing_t;
 // #endif
-
+private:
+// #if __cplusplus >= 201703L
+    std::any maybe_v;
+    bool just_b;
 };
 
 template<typename just_t, typename nothing_t=_nothing, typename nothing_x>

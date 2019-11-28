@@ -2,7 +2,8 @@
 
 ```bash
 mkdir -p build
-g++ -I../../include -I../../test/include  -lgtest -lpthread -L../Debug64  test-main.cc -o build/test-main -g -std=c++17 -fmax-errors=1
+g++ -I../../include -I../../test/include  -lgtest -lpthread -L../Debug64  
+    test-main.cc -o build/test-main -g -std=c++17 -fmax-errors=1
 build/test-main
 bl
 -------------------
@@ -41,6 +42,17 @@ cp
 mv
 1
 -------------------
+bl error
+mv error
+mv error
+cp error
+{1,bad call}
+-------------------
+cp error
+{1,bad call}
+-------------------
+mv error
+{1,bad call}
 -----------main4--------
 bl
 mv
