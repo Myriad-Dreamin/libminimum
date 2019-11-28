@@ -69,7 +69,7 @@ struct maybe
     }
 
     just_t &&just() { return std::move(std::any_cast<just_t&>(maybe_v)); }
-    auto nothing() { return std::move(std::any_cast<nothing_t&>(maybe_v)); }
+    nothing_t &&nothing() { return std::move(std::any_cast<nothing_t&>(maybe_v)); }
     template<typename nothing_x>
     auto nothing_or(nothing_x &&nothing_v) {
         return maybe_v.has_value() ? std::move(std::any_cast<nothing_t&>(maybe_v)) : std::forward<nothing_x>(nothing_v); }

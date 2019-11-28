@@ -47,7 +47,26 @@ using error = const char *;
 struct Error {
     int ErrorCode;
     error Info;
+    Error(int x, error Info) : ErrorCode(x), Info(Info) {
+#ifdef TestBCM
+        std::cout << "bl error" << std::endl;
+#endif
+    }
+    Error(const Error &x) : ErrorCode(x.ErrorCode), Info(x.Info) {
+#ifdef TestBCM
+        std::cout << "cp error" << std::endl;
+#endif
+    }
+    Error(Error &&x) :ErrorCode(x.ErrorCode), Info(x.Info) {
+#ifdef TestBCM
+        std::cout << "mv error" << std::endl;
+#endif
+    }
 };
+
+std::ostream &operator<<(std::ostream &os, const Error &x) {
+    return os << "{" << x.ErrorCode << "," << x.Info << "}";
+}
 
 maybe<Int, Error> Gen(bool c) {
     if (c) {
@@ -57,6 +76,8 @@ maybe<Int, Error> Gen(bool c) {
         return nothing<Int, Error>((Error){1, "bad call"});
     }
 }
+
+#include <cassert>
 
 int main3() {
     auto c = Gen(true);
@@ -73,12 +94,15 @@ int main3() {
     cout << "-------------------" << endl;
     auto d = Gen(false);
     if (d) {
-        auto cp = d.just();
+        assert(false);
+    } else {
+        auto cp = d.nothing();
         cout << cp << endl;
         cout << "-------------------" << endl;
-        cout << d.just() << endl;
-    } else {
-        // d.nothing();
+        Error &&ref = d.nothing();
+        cout << ref << endl;
+        cout << "-------------------" << endl;
+        cout << d.nothing() << endl;
     }
     cout << "-----------main4--------" << endl;
     return main4();
