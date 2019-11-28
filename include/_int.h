@@ -1,15 +1,23 @@
 #pragma once
 
+#include <iostream>
+
 struct Int {
     int y;
     Int(int x) : y(x) {
-        // std::cout << "bl" << std::endl;
+#ifdef TestBCM
+        std::cout << "bl" << std::endl;
+#endif
     }
     Int(const Int &x) : y(x.y) {
-        // std::cout << "cp" << std::endl;
+#ifdef TestBCM
+        std::cout << "cp" << std::endl;
+#endif
     }
     Int(Int &&x) :y(x.y) {
-        // std::cout << "mv" << std::endl;
+#ifdef TestBCM
+        std::cout << "mv" << std::endl;
+#endif
     }
     bool operator<(const Int&r) const {return y < r.y;}
 };
