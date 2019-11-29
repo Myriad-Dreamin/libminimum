@@ -23,32 +23,17 @@ struct basic_printer
 	typedef printer_t &(*applyF)(printer_t &);
 	ostream &os;
 	bool quoto = false;
-	basic_printer(ostream &os) : os(os) {}
+	basic_printer(ostream &os);
 
 	template <typename default_t, typename... Types>
 	typename std::enable_if<
 		!is_iterable<default_t>::value &&
 		!is_queue_like<default_t>::value,
 		ostream &>::type
-	print(const default_t &x)
-	{
-		return os << x;
-	}
+	print(const default_t &x);
 
 	template <typename char_t, typename... Types>
-	ostream &print(const std::basic_string<char_t> &x)
-	{
-		if (quoto)
-		{
-			os << '"';
-		}
-		os << x;
-		if (quoto)
-		{
-			os << '"';
-		}
-		return os;
-	}
+	ostream &print(const std::basic_string<char_t> &x);
 
 #if __cplusplus >= 201703L
 	template <typename char_t, typename... Types>
@@ -68,115 +53,37 @@ struct basic_printer
 #endif
 
 	template <typename... Types>
-	ostream &print(const char *x)
-	{
-		if (quoto)
-		{
-			os << '"';
-		}
-		os << x;
-		if (quoto)
-		{
-			os << '"';
-		}
-		return os;
-	}
+	ostream &print(const char *x);
 
 	template <typename... Types>
-	ostream &print(const bool &x)
-	{
-		return os << (x ? "true" : "false");
-	}
+	ostream &print(const bool &x);
 
 	template <typename first_t, typename second_t, typename... Types>
-	ostream &print(const std::pair<first_t, second_t> &x)
-	{
-		os << '(';
-		print(x.first) << ',';
-		print(x.second) << ')';
-        return os;
-	}
+	ostream &print(const std::pair<first_t, second_t> &x);
 
 	template <typename container_t, typename... Types>
 	typename std::enable_if<
         !std::is_convertible<container_t, std::basic_string<typename container_t::value_type>>::value
         && is_iterable<container_t>::value, ostream &>::type
-	print(const container_t &xs)
-	{
-		os << '{';
-		bool vd = false;
-		for (auto &x: xs)
-		{
-			if (vd)
-				os << ',';
-			else
-				vd = true;
-			print(x);
-		}
-		return os << '}';
-	}
+	print(const container_t &xs);
 
 	template <typename queue_t, typename... Types>
 	typename std::enable_if<is_queue_like<queue_t>::value, ostream &>::type
-	print(queue_t &x)
-	{
-		std::queue<typename queue_t::value_type> cacher;
-		os << '<';
-		bool vd = false;
-		while (x.size())
-		{
-			if (vd)
-				os << ',';
-			else
-				vd = true;
-			print(x.front());
-			cacher.emplace(std::move(x.front()));
-			x.pop();
-		}
-		os << '>';
-		while (cacher.size())
-		{
-			x.emplace(std::move(cacher.front()));
-			cacher.pop();
-		}
-		return os;
-	}
+	print(queue_t &x);
 
 	printer_t &
-	operator<<(ostream &(*__pf)(ostream &))
-	{
-		__pf(os);
-		return *this;
-	}
+	operator<<(ostream &(*__pf)(ostream &));
 
 	printer_t &
-	operator<<(ios &(*__pf)(ios &))
-	{
-		__pf(os);
-		return *this;
-	}
+	operator<<(ios &(*__pf)(ios &));
 
 	printer_t &
-	operator<<(std::ios_base &(*__pf)(std::ios_base &))
-	{
-		__pf(os);
-		return *this;
-	}
+	operator<<(std::ios_base &(*__pf)(std::ios_base &));
 
-	printer_t &operator<<(applyF f)
-	{
-		return f(*this);
-		// std::endl;
-	}
+	printer_t &operator<<(applyF f);
 
 	template <typename T>
-	typename std::enable_if<!std::is_base_of<apply_t, T>::value, printer_t &>::type operator<<(T x)
-	{
-		print(x);
-		return *this;
-
-		// std::endl;
-	}
+	typename std::enable_if<!std::is_base_of<apply_t, T>::value, printer_t &>::type operator<<(T x);
 
 	// template <typename I, typename... Types>
 	// typename std::enable_if<is_iterator<I>::value>::type
@@ -187,73 +94,52 @@ struct basic_printer
 	// }
 };
 
+
 using printer = basic_printer<char>;
 
-printer cout(std::cout), cerr(std::cerr), clog(std::clog);
+extern printer cout, cerr, clog;
 
 using wprinter = basic_printer<wchar_t>;
 
-wprinter wcout(std::wcout), wcerr(std::wcerr), wclog(std::wclog);
+extern wprinter wcout, wcerr, wclog;
 
 template <typename T>
-printer &print(T x)
-{
-	return cout << x;
-}
+printer &print(T x);
 
-template <typename I>
+    template <typename I>
 typename std::enable_if<is_iterator<I>::value, printer &>::type
-print(I ls, I rs)
-{
-	return cout;
-}
+print(I ls, I rs);
 
 template <typename stream_t>
 basic_printer<stream_t> &
-endl(basic_printer<stream_t> &__printer)
-{
-	__printer.os << std::endl;
-	return __printer;
-}
+endl(basic_printer<stream_t> &__printer);
 
 template <typename stream_t>
 basic_printer<stream_t> &
-ends(basic_printer<stream_t> &__printer)
-{
-	__printer.os << std::ends;
-	return __printer;
-}
+ends(basic_printer<stream_t> &__printer);
 
 template <typename stream_t>
 basic_printer<stream_t> &
-flush(basic_printer<stream_t> &__printer)
-{
-	__printer.os << std::flush;
-	return __printer;
-}
+flush(basic_printer<stream_t> &__printer);
 
 template<typename stream_t>
 struct _basic_quotoS : public basic_printer<stream_t>::apply_t
 {
 	bool q;
-	_basic_quotoS(bool q) :q(q) {}
+	_basic_quotoS(bool q);
 };
 
-using _quotoS = _basic_quotoS<char>;
+    using _quotoS = _basic_quotoS<char>;
 
-_quotoS quoto(bool quotoT = true)
-{
-	return _quotoS(quotoT);
-}
+_quotoS quoto(bool quotoT = true);
 
 template <typename stream_t>
 basic_printer<stream_t> &
-operator<<(basic_printer<stream_t> &__printer, _basic_quotoS<stream_t> applyS)
-{
-	__printer.quoto = applyS.q;
-	return __printer;
-}
+operator<<(basic_printer<stream_t> &__printer, _basic_quotoS<stream_t> applyS);
 
 // auto &endl = basic_endl<char>;
 
 } // namespace minimum
+
+
+#include "print.cc"

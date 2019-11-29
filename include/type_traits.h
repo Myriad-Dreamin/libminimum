@@ -70,7 +70,7 @@ namespace minimum {
 	template <typename T>
 	using is_queue_like = decltype(__is_queue_like_np::detail::is_queue_like_impl<T>(0));
 
-	namespace has_operator_pp_np
+	namespace __has_operator_pp_np
 	{
 		namespace detail
 		{
@@ -95,12 +95,32 @@ namespace minimum {
 			template <typename T>
 			std::false_type has_operator_pp_impl(...);
 		}
-	} // namespace has_operator_pp_np
+	} // namespace __has_operator_pp_np
 
 	template <typename T>
-	using has_operator_pp = decltype(has_operator_pp_np::detail::has_operator_pp_impl<T>(0));
+	using has_operator_pp = decltype(__has_operator_pp_np::detail::has_operator_pp_impl<T>(0));
 
 	template <typename T>
-	using has_operator_spp = decltype(has_operator_pp_np::detail0::has_operator_pp_impl<T>(0));
+	using has_operator_spp = decltype(__has_operator_pp_np::detail0::has_operator_pp_impl<T>(0));
+
+    namespace __has_length_np
+    {
+        namespace detail
+        {
+            template <typename T>
+            auto has_length_impl(int)
+            -> decltype (
+            std::declval<T&>().length(),
+                    std::true_type{});
+
+            template <typename T>
+            std::false_type has_length_impl(...);
+        }
+
+    } // namespace __has_length_np
+
+    template <typename T>
+    using has_length = decltype(__has_length_np::detail::has_length_impl<T>(0));
+
 }
 

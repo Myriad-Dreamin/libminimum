@@ -10,15 +10,15 @@ int main2() {
     
     using fgraph_t = fixed_integral_graph<int, 100, 100>;
     fgraph_t fg;
-    fg.addedge(2, 3);
-    fg.addedge(2, 4);
+    fg.add_edge(2, 3);
+    fg.add_edge(2, 4);
     for(auto &e: fg.at(2)) {
         cout << e << endl;
     }
     const auto &fg_const = fg;
     fgraph_t::const_partial_node_iterator fpti = fg_const.at(2);
-    for(auto e = fpti.begin(); e != fpti.end(); e++) {
-        cout << *e << endl;
+    for(int e : fpti) {
+        cout << e << endl;
     }
     return 0;
 }
@@ -41,15 +41,16 @@ int main() {
 #ifdef Fix
     using fgraph_t = fixed_graph<int, 100>;
     fgraph_t fg;
-    fg.addedge(2, 3);
-    fg.addedge(2, 4);
+    fg.add_edge(2, 3);
+    fg.add_edge(2, 4);
+
     for(auto &e: fg.at(2)) {
         cout << e << endl;
     }
     const auto &fg_const = fg;
     fgraph_t::const_partial_node_iterator fpti = fg_const.at(2);
-    for(auto e = fpti.begin(); e != fpti.end(); e++) {
-        cout << *e << endl;
+    for(int e : fpti) {
+        cout << e << endl;
     }
 #endif
     

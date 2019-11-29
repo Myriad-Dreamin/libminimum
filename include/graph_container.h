@@ -14,22 +14,22 @@ namespace minimum {
         node_container_t noder;
         edge_container_t edger;
 
-		graph_container() :noder(), edger(noder) {
+		graph_container() : noder(), edger(noder)  {
             init();
-		}
+        }
 
-		graph_container(int n) : noder(), edger(noder) {
-			init(n);
-		}
+		explicit graph_container(int n) : noder(), edger(noder)  {
+            init(n);
+        }
 
-		graph_container(int n, int m) : noder(), edger(noder) {
-			init(n, m);
-		}
+		graph_container(int n, int m) : noder(), edger(noder)  {
+            init(n, m);
+        }
 
 		void init() {
             noder.init();
             edger.init();
-		}
+        };
 
 		void init(int n) {
             noder.init(n);
@@ -55,12 +55,12 @@ namespace minimum {
         inline const edge_t & _at_e(edge_id_t id) const {
             return edger._at_e(id);
         }
-        
+
         // must inline
         inline edge_t & _at_e(edge_id_t id) {
             return edger._at_e(id);
         }
-        
+
         // must inline
         inline edge_t & edge(edge_id_t id) {
             return edger.edge(id);

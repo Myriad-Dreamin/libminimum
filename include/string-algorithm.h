@@ -3,8 +3,14 @@
 #include <string>
 #include <vector>
 #include "cxx17.h"
+#include "type_traits.h"
 
 namespace minimum {
+    #ifdef IsCXX17
+    #define maybe_string_view std::basic_string_view
+    #else
+    #define maybe_string_view std::basic_string
+    #endif
 
 
 	template<typename stream_t>
@@ -25,80 +31,96 @@ namespace minimum {
 
 
     template<class algorithm_policy=_algorithm_policy>
-    struct algorithm_impl {
+    struct __split_algorithm_impl {
 
 
-        template<typename stream_t>
-        std::vector<typename traits<stream_t>::string> &split(
-            const typename traits<stream_t>::string &s,
-            const stream_t sep,
-            std::vector<typename traits<stream_t>::string> &res
+        template<typename stream_t=char, class StringLike=maybe_string_view<stream_t>, class VectorLike=std::vector<StringLike>>
+        typename std::enable_if<has_length<StringLike>::value, VectorLike &>::type split(
+                const StringLike &s,
+                const stream_t sep,
+                VectorLike &res
         ) {
+            using str = typename VectorLike::value_type;
             res.clear();
             // traits<stream_t>::string
             size_t ls = 0;
             for (int x = 0; x < s.length() ;x++) {
                 if (s[x] == sep) {
-                    res.push_back(s.substr(ls, x-ls));
                     if CXX17_STATIC_CONDITION (algorithm_policy::emit_empty_chars) {
+                        if (x != ls) res.push_back(str(s.substr(ls, x-ls)));
                         while(x < s.length() && s[x] == sep) x++;
+                    } else {
+                        res.push_back(str(s.substr(ls, x-ls)));
                     }
                     ls = x;
                 }
             }
-            if(ls < s.length()) res.push_back(s.substr(ls));
+            if(ls < s.length()) res.push_back(str(s.substr(ls)));
             return res;
         }
 
-        #if __cplusplus >= 201703L 
-        template<typename stream_t>
-        std::vector<std::string> &split(
-            const std::string_view &s,
-            const std::string_view &sep,
-            std::vector<std::string> &res
+        template<typename stream_t=char, class StringLike=maybe_string_view<stream_t>, class VectorLike=std::vector<StringLike>>
+        typename std::enable_if<!has_length<StringLike>::value, VectorLike &>::type split(
+                const StringLike &s,
+                const stream_t sep,
+                VectorLike &res
         ) {
-        #else
-        std::vector<std::string> &split(
-            const std::string &s,
-            const std::string &sep,
-            std::vector<std::string> &res
-        ) {
-        #endif
-            res.clear();
-            size_t ls = 0, sl = sep.length();
-            if (sl < 5) {
-                size_t pos = s.find(sep, 0);
-                
-                while(pos != std::string::npos)
-                {
-                    res.push_back(std::string(s.substr(ls, pos-ls)));
-                    ls = pos + sl;
-                    pos = s.find(sep,ls+1);
-                }
-                res.push_back(std::string(s.substr(ls)));
-            } else {
-            }
-            return res;
+//            static_assert(std::is_same_v<StringLike, VectorLike>, "QAQ");
+            return split(maybe_string_view<stream_t>(s), sep, res);
         }
 
-        std::vector<std::string> &split(
-            const std::string &s,
-            const char *sep,
-            std::vector<std::string> &res
-        ) {
-            #if __cplusplus >= 201703L
-            return split<char>(s, std::string_view(sep), res);
-            #else
-            return split(s, std::string(sep), res);
-            #endif
-        }
+//        template<typename stream_t=char,
+//            class StringViewLikeA=maybe_string_view<stream_t>,
+//            class StringViewLikeB=StringViewLikeA,
+//            class VectorLike=std::vector<StringViewLikeA>>
+//        typename std::enable_if<has_length<StringViewLikeA>::value && has_length<StringViewLikeB>::value, VectorLike &>::type &split_s(
+//            const StringViewLikeA &s,
+//            const StringViewLikeB &sep,
+//            VectorLike &res
+//        ) {
+//            using str = typename VectorLike::value_type;
+//            res.clear();
+//            size_t ls = 0, sl = sep.length();
+//            if (sl < 5) {
+//                size_t pos = s.find(sep, 0);
+//
+//                while(pos != std::string::npos)
+//                {
+//                    res.push_back(str(s.substr(ls, pos-ls)));
+//                    ls = pos + sl;
+//                    pos = s.find(sep,ls+1);
+//                }
+//                res.push_back(str(s.substr(ls)));
+//            } else {
+//                size_t pos = s.find(sep, 0);
+//
+//                while(pos != std::string::npos)
+//                {
+//                    res.push_back(str(s.substr(ls, pos-ls)));
+//                    ls = pos + sl;
+//                    pos = s.find(sep,ls+1);
+//                }
+//                res.push_back(str(s.substr(ls)));
+//            }
+//            return res;
+//        }
+//
+//        template<typename stream_t=char, class StringLike=maybe_string_view<stream_t>, class VectorLike=std::vector<StringLike>>
+//        VectorLike &split_s(
+//            const StringLike &s,
+//            const stream_t *sep,
+//            VectorLike &res
+//        ) {
+//            return split<char>(s, maybe_string_view<stream_t>(sep), res);
+//        }
     };
 
-    auto __algorithm_impl_instance = algorithm_impl<>();
+    auto __algorithm_impl_instance = __split_algorithm_impl<>();
 
-    template<typename res_t, typename string_t, typename split_t>
-    res_t &split(string_t s, split_t sep, res_t &res) {
-        return __algorithm_impl_instance.split(s, sep, res);
+    template<typename string_t, typename split_t, typename res_t>
+    res_t &split(string_t &&s, split_t &&sep, res_t &res) {
+//        static_assert(std::is_same_v<std::is_same<string_t, split_t>, res_t>, "QQQ");
+        return __algorithm_impl_instance.split(std::forward<string_t>(s), std::forward<split_t>(sep), res);
     }
 
 	template<typename stream_t>
@@ -172,4 +194,6 @@ namespace minimum {
 		if (ls != s.length()) res.push_back(s.substr(ls));
 		return res;
 	}
+
+#undef maybe_string_view
 }

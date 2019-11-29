@@ -37,7 +37,7 @@ int main2() {
     X = nothing<Int, Int>(u);
     cout << bool(X) << ' ' << X.has_value() << endl;
     X = nothing<Int, Int>(std::move(u));
-    cout << bool(X) << ' ' << X.has_value() << endl;    
+    cout << bool(X) << ' ' << X.has_value() << endl;
     cout << "-----------main3--------" << endl;
     return main3();
 }

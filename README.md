@@ -98,7 +98,7 @@ int main() {
     using graph_t = fixed_graph<int, 100, 100>;
     graph_t g;
     g.addedge(2, 3);
-    g.addedge(2, 4);
+    g.add_edge(2, 4);
     for(auto &e: g.at(2)) {
         cout << e << endl;
     }
